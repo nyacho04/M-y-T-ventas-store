@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getProducts, addProduct, updateProduct } from '../../firebase/products';
+import { useProducts } from '../../hooks/useProducts';
+import useCategories from '../../hooks/useCategories';
+import { addProduct, updateProduct } from '../../firebase/products';
 import './ProductForm.css';
 
 const ProductForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = Boolean(id);
+  const { products } = useProducts();
+  const { categories } = useCategories();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -21,44 +25,36 @@ const ProductForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const categories = [
-    { value: 'hombre', label: 'Hombre' },
-    { value: 'mujer', label: 'Mujer' },
-    { value: 'niños', label: 'Niños' },
-    { value: 'accesorios', label: 'Accesorios' }
-  ];
-
   const availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Única'];
   const availableColors = ['Blanco', 'Negro', 'Azul', 'Rojo', 'Verde', 'Rosa', 'Gris', 'Beige', 'Multicolor'];
 
   useEffect(() => {
-    if (isEdit) {
+    if (isEdit && products.length > 0) {
       loadProduct();
     }
-  }, [id, isEdit]);
+  }, [id, isEdit, products]);
 
-  const loadProduct = async () => {
-    try {
-      const products = await getProducts();
-      const productToEdit = products.find(p => p.id === id);
-      
-      if (productToEdit) {
-        setFormData({
-          name: productToEdit.name,
-          price: productToEdit.price,
-          description: productToEdit.description,
-          category: productToEdit.category,
-          sizes: productToEdit.sizes || [],
-          colors: productToEdit.colors || [],
-          image: productToEdit.image
-        });
-      } else {
-        setError('Producto no encontrado.');
-        navigate('/admin');
-      }
-    } catch (err) {
-      setError('Error al cargar el producto.');
-      console.error('Error loading product:', err);
+  const loadProduct = () => {
+    if (!isEdit || !products.length) return;
+    
+    setLoading(true);
+    const productToEdit = products.find(p => p.id.toString() === id);
+    
+    if (productToEdit) {
+      setFormData({
+        name: productToEdit.name,
+        price: productToEdit.price,
+        description: productToEdit.description,
+        category: productToEdit.category,
+        sizes: productToEdit.sizes || [],
+        colors: productToEdit.colors || [],
+        image: productToEdit.image
+      });
+      setLoading(false);
+    } else {
+      setError('Producto no encontrado.');
+      setLoading(false);
+      navigate('/admin');
     }
   };
 
@@ -117,18 +113,22 @@ const ProductForm = () => {
     }
   };
 
+  if (loading && isEdit) {
+    return (
+      <div className="product-form">
+        <div className="loading-spinner">
+          <p>Cargando producto para editar...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="product-form">
       <div className="form-header">
         <h1 className="form-title">
           {isEdit ? 'Editar Producto' : 'Agregar Producto'}
         </h1>
-        <button 
-          className="back-btn"
-          onClick={() => navigate('/admin')}
-        >
-          ← Volver
-        </button>
       </div>
 
       <form className="product-form-content" onSubmit={handleSubmit}>
@@ -276,14 +276,14 @@ const ProductForm = () => {
             onClick={() => navigate('/admin')}
             disabled={loading}
           >
-            Cancelar
+            ← Volver
           </button>
           <button
             type="submit"
             className="submit-btn"
             disabled={loading}
           >
-            {loading ? 'Guardando...' : (isEdit ? 'Actualizar' : 'Crear Producto')}
+            {loading ? 'Guardando...' : (isEdit ? 'Guardar Cambios' : 'Crear Producto')}
           </button>
         </div>
       </form>

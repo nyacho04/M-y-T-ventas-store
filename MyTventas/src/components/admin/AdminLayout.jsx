@@ -1,96 +1,68 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { StoreIcon, PlusIcon, LogoutIcon, TagIcon } from '../icons/Icons';
 import './AdminLayout.css';
 
 const AdminLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', path: '/admin' },
-    { id: 'products', label: 'Productos', icon: '🛍️', path: '/admin/products' },
-    { id: 'add-product', label: 'Agregar Producto', icon: '➕', path: '/admin/add-product' },
-  ];
+  const getPageTitle = () => {
+    const path = location.pathname;
+    if (path === '/admin') return 'Dashboard';
+    if (path === '/admin/add-product') return 'Agregar Producto';
+    if (path.includes('/admin/edit-product/')) return 'Editar Producto';
+    return 'Panel Admin';
+  };
 
   const handleLogout = () => {
-    // TODO: Implementar logout con Firebase Auth
-    // await signOut(auth);
     localStorage.removeItem('adminToken');
     navigate('/admin/login');
   };
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
-  const isActive = (path) => {
-    return location.pathname === path;
+  const handleBackToStore = () => {
+    navigate('/');
   };
 
   return (
     <div className="admin-layout">
-      {/* Sidebar */}
-      <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`}>
-        <div className="sidebar-header">
-          <h2 className="sidebar-title">M y T Ventas</h2>
-          <p className="sidebar-subtitle">Panel Admin</p>
+      {/* Header */}
+      <header className="admin-header">
+        <div className="header-left">
+          <button className="back-to-store-btn" onClick={handleBackToStore}>
+            <StoreIcon size={16} />
+            Ver Tienda
+          </button>
+          <h1 className="page-title">{getPageTitle()}</h1>
         </div>
-
-        <nav className="sidebar-nav">
-          <ul className="nav-list">
-            {menuItems.map((item) => (
-              <li key={item.id}>
-                <button
-                  className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
-                  onClick={() => {
-                    navigate(item.path);
-                    setSidebarOpen(false);
-                  }}
-                >
-                  <span className="nav-icon">{item.icon}</span>
-                  <span className="nav-label">{item.label}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className="sidebar-footer">
+        
+        <div className="header-right">
+          <button 
+            className="categories-btn"
+            onClick={() => navigate('/admin/categories')}
+          >
+            <TagIcon size={16} />
+            Categorías
+          </button>
+          <button 
+            className="add-product-btn"
+            onClick={() => navigate('/admin/add-product')}
+            title="Agregar Producto"
+          >
+            <PlusIcon size={16} />
+            <span className="btn-text">Agregar Producto</span>
+          </button>
           <button className="logout-btn" onClick={handleLogout}>
-            <span className="logout-icon">🚪</span>
+            <LogoutIcon size={16} />
             Cerrar Sesión
           </button>
         </div>
-      </aside>
+      </header>
 
-      {/* Main Content */}
-      <div className="admin-main">
-        {/* Header */}
-        <header className="admin-header">
-          <button className="menu-toggle" onClick={toggleSidebar}>
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-          <h1 className="page-title">
-            {menuItems.find(item => item.path === location.pathname)?.label || 'Dashboard'}
-          </h1>
-        </header>
-
-        {/* Content */}
-        <main className="admin-content">
-          <Outlet />
-        </main>
-      </div>
-
-      {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div 
-          className="sidebar-overlay" 
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      {/* Content */}
+      <main className="admin-content">
+        <Outlet />
+      </main>
     </div>
   );
 };

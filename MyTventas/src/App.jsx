@@ -8,6 +8,7 @@ import AdminLogin from './components/admin/AdminLogin';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/AdminDashboard';
 import ProductForm from './components/admin/ProductForm';
+import CategoryManager from './components/admin/CategoryManager';
 import { useProducts } from './hooks/useProducts';
 import './App.css';
 
@@ -129,6 +130,7 @@ function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="add-product" element={<ProductForm />} />
           <Route path="edit-product/:id" element={<ProductForm />} />
+          <Route path="categories" element={<CategoryManager />} />
         </Route>
         
         {/* Redirección por defecto */}

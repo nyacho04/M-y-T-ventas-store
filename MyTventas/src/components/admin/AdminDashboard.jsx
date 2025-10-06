@@ -1,34 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProducts, addProduct, updateProduct, deleteProduct } from '../../firebase/products';
+import { useProducts } from '../../hooks/useProducts';
+import { getProducts, deleteProduct } from '../../firebase/products';
+import { PackageIcon, DollarIcon, TagIcon, EditIcon, TrashIcon } from '../icons/Icons';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    loadProducts();
-  }, []);
-
-  const loadProducts = async () => {
-    try {
-      setLoading(true);
-      const productsData = await getProducts();
-      setProducts(productsData);
-    } catch (error) {
-      console.error('Error loading products:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { products, loading, error } = useProducts();
+  const [hoveredProduct, setHoveredProduct] = useState(null);
 
   const handleDeleteProduct = async (productId) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
       try {
         await deleteProduct(productId);
-        setProducts(prev => prev.filter(p => p.id !== productId));
         console.log(`Producto ${productId} eliminado`);
       } catch (error) {
         console.error('Error deleting product:', error);
@@ -61,7 +46,9 @@ const AdminDashboard = () => {
       {/* Stats Cards */}
       <div className="stats-grid">
         <div className="stat-card">
-          <div className="stat-icon">📦</div>
+          <div className="stat-icon">
+            <PackageIcon size={24} />
+          </div>
           <div className="stat-content">
             <h3 className="stat-value">{stats.totalProducts}</h3>
             <p className="stat-label">Productos</p>
@@ -69,7 +56,9 @@ const AdminDashboard = () => {
         </div>
         
         <div className="stat-card">
-          <div className="stat-icon">💰</div>
+          <div className="stat-icon">
+            <DollarIcon size={24} />
+          </div>
           <div className="stat-content">
             <h3 className="stat-value">UYU ${stats.totalValue.toLocaleString('es-UY')}</h3>
             <p className="stat-label">Valor Total</p>
@@ -77,7 +66,9 @@ const AdminDashboard = () => {
         </div>
         
         <div className="stat-card">
-          <div className="stat-icon">🏷️</div>
+          <div className="stat-icon">
+            <TagIcon size={24} />
+          </div>
           <div className="stat-content">
             <h3 className="stat-value">{stats.categories}</h3>
             <p className="stat-label">Categorías</p>
@@ -88,13 +79,7 @@ const AdminDashboard = () => {
       {/* Products Table */}
       <div className="products-section">
         <div className="section-header">
-          <h2 className="section-title">Productos Recientes</h2>
-          <button 
-            className="add-product-btn"
-            onClick={() => navigate('/admin/add-product')}
-          >
-            ➕ Agregar Producto
-          </button>
+          <h2 className="section-title">Productos</h2>
         </div>
 
         <div className="products-table-container">
@@ -121,9 +106,20 @@ const AdminDashboard = () => {
                     />
                   </td>
                   <td>
-                    <div className="product-info">
+                    <div 
+                      className="product-info"
+                      onMouseEnter={() => setHoveredProduct(product.id)}
+                      onMouseLeave={() => setHoveredProduct(null)}
+                    >
                       <h4 className="product-name">{product.name}</h4>
-                      <p className="product-description">{product.description}</p>
+                      <p className="product-description" title={product.description}>
+                        {product.description}
+                      </p>
+                      {hoveredProduct === product.id && (
+                        <div className="description-tooltip">
+                          {product.description}
+                        </div>
+                      )}
                     </div>
                   </td>
                   <td>
@@ -157,14 +153,14 @@ const AdminDashboard = () => {
                         onClick={() => handleEditProduct(product.id)}
                         title="Editar"
                       >
-                        ✏️
+                        <EditIcon size={16} />
                       </button>
                       <button 
                         className="delete-btn"
                         onClick={() => handleDeleteProduct(product.id)}
                         title="Eliminar"
                       >
-                        🗑️
+                        <TrashIcon size={16} />
                       </button>
                     </div>
                   </td>
