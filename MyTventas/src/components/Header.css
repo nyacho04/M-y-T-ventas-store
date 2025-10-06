@@ -130,6 +130,19 @@
   background: var(--lavender-100);
 }
 
+.admin-mobile-btn {
+  background: var(--lavender-600) !important;
+  color: var(--white) !important;
+  font-weight: 600;
+  margin-top: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+}
+
+.admin-mobile-btn:hover {
+  background: var(--lavender-700) !important;
+  color: var(--white) !important;
+}
+
 /* Desktop styles */
 @media (min-width: 768px) {
   .nav-desktop {

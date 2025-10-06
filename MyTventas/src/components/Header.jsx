@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Header.css';
 
 const Header = ({ onCategorySelect, selectedCategory }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const categories = [
     { id: 'all', name: 'Todos' },
@@ -19,6 +21,10 @@ const Header = ({ onCategorySelect, selectedCategory }) => {
   const handleCategoryClick = (categoryId) => {
     onCategorySelect(categoryId);
     setIsMenuOpen(false);
+  };
+
+  const handleAdminClick = () => {
+    navigate('/admin/login');
   };
 
   return (
@@ -57,9 +63,12 @@ const Header = ({ onCategorySelect, selectedCategory }) => {
             <span></span>
           </button>
 
-          {/* Admin Login Button (Preparado para futuro) */}
+          {/* Admin Login Button */}
           <div className="admin-section">
-            <button className="admin-login-btn">
+            <button 
+              className="admin-login-btn"
+              onClick={handleAdminClick}
+            >
               Admin
             </button>
           </div>
@@ -78,6 +87,17 @@ const Header = ({ onCategorySelect, selectedCategory }) => {
                 </button>
               </li>
             ))}
+            <li>
+              <button
+                className="nav-item-mobile admin-mobile-btn"
+                onClick={() => {
+                  handleAdminClick();
+                  setIsMenuOpen(false);
+                }}
+              >
+                🔐 Admin
+              </button>
+            </li>
           </ul>
         </nav>
       </div>

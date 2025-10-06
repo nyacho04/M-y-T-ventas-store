@@ -9,7 +9,9 @@ export const sampleProducts = [
     size: "M",
     color: "Blanco",
     material: "Algodón 100%",
-    availability: "Disponible"
+    availability: "Disponible",
+    sizes: ["S", "M", "L", "XL"],
+    colors: ["Blanco", "Negro", "Azul"]
   },
   {
     id: 2,
@@ -21,7 +23,9 @@ export const sampleProducts = [
     size: "S",
     color: "Negro",
     material: "Poliester Premium",
-    availability: "Disponible"
+    availability: "Disponible",
+    sizes: ["XS", "S", "M", "L"],
+    colors: ["Negro", "Rojo", "Azul"]
   },
   {
     id: 3,
@@ -33,7 +37,9 @@ export const sampleProducts = [
     size: "32",
     color: "Azul",
     material: "Denim 100%",
-    availability: "Disponible"
+    availability: "Disponible",
+    sizes: ["30", "32", "34", "36"],
+    colors: ["Azul", "Negro", "Gris"]
   },
   {
     id: 4,
@@ -45,7 +51,9 @@ export const sampleProducts = [
     size: "M",
     color: "Multicolor",
     material: "Rayón",
-    availability: "Disponible"
+    availability: "Disponible",
+    sizes: ["S", "M", "L"],
+    colors: ["Multicolor", "Rosa", "Verde"]
   },
   {
     id: 6,
@@ -57,7 +65,9 @@ export const sampleProducts = [
     size: "Única",
     color: "Gris",
     material: "Lana Merino 100%",
-    availability: "Disponible"
+    availability: "Disponible",
+    sizes: ["Única"],
+    colors: ["Gris", "Beige", "Negro"]
   },
   {
     id: 7,
@@ -69,7 +79,9 @@ export const sampleProducts = [
     size: "L",
     color: "Blanco",
     material: "Algodón Oxford",
-    availability: "Disponible"
+    availability: "Disponible",
+    sizes: ["M", "L", "XL"],
+    colors: ["Blanco", "Azul", "Gris"]
   },
   {
     id: 8,
@@ -81,7 +93,9 @@ export const sampleProducts = [
     size: "M",
     color: "Bordeaux",
     material: "Poliester Premium",
-    availability: "Disponible"
+    availability: "Disponible",
+    sizes: ["S", "M", "L"],
+    colors: ["Bordeaux", "Negro", "Azul"]
   },
   {
     id: 9,
@@ -93,7 +107,9 @@ export const sampleProducts = [
     size: "M",
     color: "Azul Claro",
     material: "Denim 100%",
-    availability: "Disponible"
+    availability: "Disponible",
+    sizes: ["S", "M", "L"],
+    colors: ["Azul Claro", "Negro", "Blanco"]
   },
   {
     id: 10,
@@ -105,7 +121,9 @@ export const sampleProducts = [
     size: "Única",
     color: "Negro y Blanco",
     material: "Algodón + Malla",
-    availability: "Disponible"
+    availability: "Disponible",
+    sizes: ["Única"],
+    colors: ["Negro y Blanco", "Azul", "Rojo"]
   },
   {
     id: 12,
@@ -117,7 +135,9 @@ export const sampleProducts = [
     size: "S",
     color: "Rosa",
     material: "Poliester Técnico",
-    availability: "Disponible"
+    availability: "Disponible",
+    sizes: ["XS", "S", "M"],
+    colors: ["Rosa", "Negro", "Azul"]
   }
 ];
 
