@@ -152,6 +152,52 @@
   margin: 0;
 }
 
+/* Estilos para la nueva estructura de detalles */
+.details-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.detail-item strong {
+  color: var(--gray-800);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.detail-tag {
+  background: var(--lavender-100);
+  color: var(--lavender-700);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid var(--lavender-200);
+}
+
+.detail-value {
+  color: var(--gray-600);
+  font-size: 0.9rem;
+}
+
+.detail-value.available {
+  color: #059669;
+  font-weight: 600;
+}
+
+/* Estilos legacy para compatibilidad */
 .details-list {
   list-style: none;
   display: flex;
@@ -178,16 +224,29 @@
 
 .contact-btn {
   flex: 1;
-  background: var(--lavender-600);
+  background: #25D366; /* Color verde de WhatsApp */
   color: var(--white);
   padding: var(--spacing-sm) var(--spacing-md);
   font-weight: 600;
   border-radius: var(--border-radius-sm);
-  transition: background var(--transition-fast);
+  transition: all var(--transition-fast);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  font-size: 1rem;
 }
 
 .contact-btn:hover {
-  background: var(--lavender-700);
+  background: #128C7E; /* Verde más oscuro al hover */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.contact-btn:active {
+  transform: translateY(0);
 }
 
 .close-btn {

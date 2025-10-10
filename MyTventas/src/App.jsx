@@ -10,6 +10,7 @@ import AdminDashboard from './components/admin/AdminDashboard';
 import ProductForm from './components/admin/ProductForm';
 import CategoryManager from './components/admin/CategoryManager';
 import { useProducts } from './hooks/useProducts';
+import useAuth from './hooks/useAuth';
 import './App.css';
 
 // Componente para la tienda pública
@@ -65,9 +66,7 @@ const StoreApp = () => {
             </div>
             
             {loading ? (
-              <div className="loading-spinner">
-                <p>Cargando productos...</p>
-              </div>
+              <div className="loading-spinner"></div>
             ) : error ? (
               <div className="error-message">
                 <p>Error al cargar productos: {error}</p>
@@ -108,8 +107,22 @@ const StoreApp = () => {
 
 // Componente para verificar autenticación de admin
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem('adminToken');
-  return token ? children : <Navigate to="/admin/login" replace />;
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh' 
+      }}>
+        <p>Verificando autenticación...</p>
+      </div>
+    );
+  }
+  
+  return user ? children : <Navigate to="/admin/login" replace />;
 };
 
 function App() {

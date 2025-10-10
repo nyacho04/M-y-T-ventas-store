@@ -1,11 +1,13 @@
 import React from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { StoreIcon, PlusIcon, LogoutIcon, TagIcon } from '../icons/Icons';
+import useAuth from '../../hooks/useAuth';
 import './AdminLayout.css';
 
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const getPageTitle = () => {
     const path = location.pathname;
@@ -15,9 +17,13 @@ const AdminLayout = () => {
     return 'Panel Admin';
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminToken');
-    navigate('/admin/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/admin/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   const handleBackToStore = () => {
@@ -52,6 +58,9 @@ const AdminLayout = () => {
             <PlusIcon size={16} />
             <span className="btn-text">Agregar Producto</span>
           </button>
+          <div className="user-info">
+            <span className="user-email">{user?.email}</span>
+          </div>
           <button className="logout-btn" onClick={handleLogout}>
             <LogoutIcon size={16} />
             Cerrar Sesión

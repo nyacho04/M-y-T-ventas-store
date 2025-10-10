@@ -165,7 +165,7 @@
 }
 
 .delete-category-btn {
-  background: var(--red-500);
+  background: #dc2626; /* Rojo más visible */
   color: var(--white);
   border: none;
   width: 32px;
@@ -178,11 +178,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
 }
 
 .delete-category-btn:hover {
-  background: var(--red-600);
+  background: #b91c1c; /* Rojo más oscuro al hover */
   transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
+}
+
+.delete-category-btn:active {
+  transform: scale(0.95);
 }
 
 /* Mobile optimizations */

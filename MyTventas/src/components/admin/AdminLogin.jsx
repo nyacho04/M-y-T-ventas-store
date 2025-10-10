@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../../firebase/auth';
 import './AdminLogin.css';
 
 const AdminLogin = () => {
@@ -27,21 +28,12 @@ const AdminLogin = () => {
     setError('');
 
     try {
-      // TODO: Implementar autenticación real con Firebase Auth
-      // const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      // const user = userCredential.user;
-      
-      // Simulación de login por ahora
-      if (formData.email === 'admin@mytventas.com' && formData.password === 'admin123') {
-        // Simular token de autenticación
-        localStorage.setItem('adminToken', 'simulated-token');
-        navigate('/admin');
-      } else {
-        setError('Credenciales incorrectas. Usa admin@mytventas.com / admin123');
-      }
+      // Usar Firebase Auth para autenticación real
+      await loginUser(formData.email, formData.password);
+      navigate('/admin');
     } catch (err) {
-      setError('Error al iniciar sesión. Intenta nuevamente.');
       console.error('Login error:', err);
+      setError('Credenciales incorrectas. Verifica tu email y contraseña.');
     } finally {
       setIsLoading(false);
     }
@@ -67,7 +59,7 @@ const AdminLogin = () => {
               value={formData.email}
               onChange={handleInputChange}
               className="form-input"
-              placeholder="admin@mytventas.com"
+              placeholder="tu-email@ejemplo.com"
               required
               disabled={isLoading}
             />
@@ -107,7 +99,7 @@ const AdminLogin = () => {
 
         <div className="login-footer">
           <p className="demo-credentials">
-            <strong>Demo:</strong> admin@mytventas.com / admin123
+            <strong>Ingresa con tu cuenta de administrador</strong>
           </p>
         </div>
       </div>

@@ -1,51 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PlusIcon, TagIcon } from '../icons/Icons';
+import useCategories from '../../hooks/useCategories';
+import { useProducts } from '../../hooks/useProducts';
 import './CategoryManager.css';
 
 const CategoryManager = () => {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState([
-    { id: 'hombre', name: 'Hombre', count: 0 },
-    { id: 'mujer', name: 'Mujer', count: 0 },
-    { id: 'niños', name: 'Niños', count: 0 },
-    { id: 'accesorios', name: 'Accesorios', count: 0 }
-  ]);
+  const { categories, loading, error, addCategory, removeCategory } = useCategories();
+  const { products } = useProducts();
   const [newCategory, setNewCategory] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [addingCategory, setAddingCategory] = useState(false);
+
+  // Función para contar productos por categoría
+  const getCategoryProductCount = (categoryValue) => {
+    return products.filter(product => product.category === categoryValue).length;
+  };
 
   const handleAddCategory = async (e) => {
     e.preventDefault();
     if (!newCategory.trim()) return;
 
     const categoryId = newCategory.toLowerCase().replace(/\s+/g, '-');
-    const categoryExists = categories.some(cat => cat.id === categoryId);
+    const categoryExists = categories.some(cat => cat.value === categoryId || cat.id === categoryId);
 
     if (categoryExists) {
       alert('Esta categoría ya existe');
       return;
     }
 
-    setLoading(true);
+    setAddingCategory(true);
     
-    // Simular guardado (aquí conectarías con Firebase)
-    setTimeout(() => {
-      const newCat = {
-        id: categoryId,
-        name: newCategory.trim(),
-        count: 0
-      };
-      setCategories(prev => [...prev, newCat]);
-      setNewCategory('');
-      setLoading(false);
-      console.log('Categoría agregada:', newCat);
-    }, 500);
+    try {
+      const success = await addCategory(newCategory.trim());
+      if (success) {
+        setNewCategory('');
+        console.log('Categoría agregada:', newCategory);
+      } else {
+        alert('Error al agregar la categoría');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al agregar la categoría');
+    } finally {
+      setAddingCategory(false);
+    }
   };
 
-  const handleDeleteCategory = (categoryId) => {
+  const handleDeleteCategory = async (categoryId) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar esta categoría?')) {
-      setCategories(prev => prev.filter(cat => cat.id !== categoryId));
-      console.log('Categoría eliminada:', categoryId);
+      try {
+        const success = await removeCategory(categoryId);
+        if (success) {
+          console.log('Categoría eliminada:', categoryId);
+        } else {
+          alert('Error al eliminar la categoría');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al eliminar la categoría');
+      }
     }
   };
 
@@ -102,26 +116,43 @@ const CategoryManager = () => {
           Categorías Existentes
         </h2>
         
-        <div className="categories-grid">
-          {categories.map((category) => (
-            <div key={category.id} className="category-card">
-              <div className="category-info">
-                <h3 className="category-name">{category.name}</h3>
-                <p className="category-count">{category.count} productos</p>
-              </div>
+        {loading ? (
+          <div className="loading-message">
+            <p>Cargando categorías...</p>
+          </div>
+        ) : error ? (
+          <div className="error-message">
+            <p>Error: {error}</p>
+          </div>
+        ) : (
+          <div className="categories-grid">
+            {categories.map((category) => {
+              const categoryValue = category.value || category.id;
+              const productCount = getCategoryProductCount(categoryValue);
               
-              <div className="category-actions">
-                <button 
-                  className="delete-category-btn"
-                  onClick={() => handleDeleteCategory(category.id)}
-                  title="Eliminar categoría"
-                >
-                  ×
-                </button>
+              return (
+                <div key={category.id} className="category-card">
+                  <div className="category-info">
+                    <h3 className="category-name">{category.name}</h3>
+                    <p className="category-count">
+                      {productCount} {productCount === 1 ? 'producto' : 'productos'}
+                    </p>
+                  </div>
+                
+                <div className="category-actions">
+                  <button 
+                    className="delete-category-btn"
+                    onClick={() => handleDeleteCategory(category.id)}
+                    title="Eliminar categoría"
+                  >
+                    ×
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

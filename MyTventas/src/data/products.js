@@ -141,10 +141,5 @@ export const sampleProducts = [
   }
 ];
 
-export const productCategories = [
-  { id: 'all', name: 'Todos' },
-  { id: 'hombre', name: 'Hombre' },
-  { id: 'mujer', name: 'Mujer' },
-  { id: 'niños', name: 'Niños' },
-  { id: 'accesorios', name: 'Accesorios' }
-];
+// Las categorías ahora se manejan dinámicamente desde Firebase
+// Este archivo solo contiene productos de ejemplo

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useProducts } from '../../hooks/useProducts';
 import useCategories from '../../hooks/useCategories';
-import { addProduct, updateProduct } from '../../firebase/products';
+import { addProduct, updateProduct, uploadImage } from '../../firebase/products';
 import './ProductForm.css';
 
 const ProductForm = () => {
@@ -10,7 +10,7 @@ const ProductForm = () => {
   const { id } = useParams();
   const isEdit = Boolean(id);
   const { products } = useProducts();
-  const { categories } = useCategories();
+  const { categoriesForSelect } = useCategories();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -24,9 +24,17 @@ const ProductForm = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [imagePreview, setImagePreview] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Única'];
-  const availableColors = ['Blanco', 'Negro', 'Azul', 'Rojo', 'Verde', 'Rosa', 'Gris', 'Beige', 'Multicolor'];
+  const availableColors = [
+    'Blanco', 'Negro', 'Azul', 'Rojo', 'Verde', 'Rosa', 'Gris', 'Beige', 
+    'Amarillo', 'Naranja', 'Morado', 'Violeta', 'Celeste', 'Turquesa',
+    'Marfil', 'Coral', 'Salmón', 'Menta', 'Lavanda', 'Burgundy',
+    'Azul Marino', 'Verde Oliva', 'Dorado', 'Plateado', 'Cobre',
+    'Caqui', 'Terracota', 'Magenta', 'Cian', 'Multicolor', 'Estampado'
+  ];
 
   useEffect(() => {
     if (isEdit && products.length > 0) {
@@ -50,6 +58,7 @@ const ProductForm = () => {
         colors: productToEdit.colors || [],
         image: productToEdit.image
       });
+      setImagePreview(productToEdit.image);
       setLoading(false);
     } else {
       setError('Producto no encontrado.');
@@ -82,6 +91,59 @@ const ProductForm = () => {
         ? prev.colors.filter(c => c !== color)
         : [...prev.colors, color]
     }));
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validar tipo de archivo
+    if (!file.type.startsWith('image/')) {
+      setError('Por favor selecciona un archivo de imagen válido');
+      return;
+    }
+
+    // Validar tamaño inicial (máximo 10MB antes de compresión)
+    if (file.size > 10 * 1024 * 1024) {
+      setError('La imagen debe ser menor a 10MB. Se comprimirá automáticamente si es necesario.');
+      return;
+    }
+
+    setUploadingImage(true);
+    setError('');
+
+    try {
+      // Crear preview local inmediatamente
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+
+      // Procesar imagen (convertir a Base64)
+      const imageData = await uploadImage(file);
+      setFormData(prev => ({
+        ...prev,
+        image: imageData
+      }));
+      
+      console.log('Imagen procesada exitosamente');
+    } catch (error) {
+      console.error('Error processing image:', error);
+      setError(error.message || 'Error al procesar la imagen');
+      setImagePreview('');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleImageUrlChange = (e) => {
+    const { value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      image: value
+    }));
+    setImagePreview(value);
   };
 
   const handleSubmit = async (e) => {
@@ -186,7 +248,7 @@ const ProductForm = () => {
                 required
                 disabled={loading}
               >
-                {categories.map(cat => (
+                {categoriesForSelect.map(cat => (
                   <option key={cat.value} value={cat.value}>
                     {cat.label}
                   </option>
@@ -212,20 +274,53 @@ const ProductForm = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="image" className="form-label">
-                URL de Imagen *
+              <label className="form-label">
+                Imagen del Producto *
               </label>
-              <input
-                type="url"
-                id="image"
-                name="image"
-                value={formData.image}
-                onChange={handleInputChange}
-                className="form-input"
-                placeholder="https://ejemplo.com/imagen.jpg"
-                required
-                disabled={loading}
-              />
+              
+              {/* Preview de imagen */}
+              {imagePreview && (
+                <div className="image-preview">
+                  <img 
+                    src={imagePreview} 
+                    alt="Preview" 
+                    className="preview-image"
+                  />
+                </div>
+              )}
+              
+              {/* Botón de carga desde galería */}
+              <div className="image-upload-section">
+                <label htmlFor="imageFile" className="upload-btn">
+                  <span className="upload-icon">📷</span>
+                  {uploadingImage ? 'Procesando imagen...' : 'Importar desde Galería (Max 10MB)'}
+                </label>
+                <input
+                  type="file"
+                  id="imageFile"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden-input"
+                  disabled={loading || uploadingImage}
+                />
+                
+                <div className="or-divider">
+                  <span>o</span>
+                </div>
+                
+                {/* Input de URL manual */}
+                <input
+                  type="url"
+                  id="image"
+                  name="image"
+                  value={formData.image}
+                  onChange={handleImageUrlChange}
+                  className="form-input"
+                  placeholder="Pega una URL de imagen..."
+                  required
+                  disabled={loading || uploadingImage}
+                />
+              </div>
             </div>
           </div>
 
@@ -281,9 +376,9 @@ const ProductForm = () => {
           <button
             type="submit"
             className="submit-btn"
-            disabled={loading}
+            disabled={loading || uploadingImage}
           >
-            {loading ? 'Guardando...' : (isEdit ? 'Guardar Cambios' : 'Crear Producto')}
+            {loading ? 'Guardando...' : uploadingImage ? 'Subiendo imagen...' : (isEdit ? 'Guardar Cambios' : 'Crear Producto')}
           </button>
         </div>
       </form>

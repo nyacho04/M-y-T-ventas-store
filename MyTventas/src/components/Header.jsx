@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useCategories from '../hooks/useCategories';
 import './Header.css';
 
 const Header = ({ onCategorySelect, selectedCategory }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { categories } = useCategories();
 
-  const categories = [
+  // Agregar "Todos" como primera opción y usar categorías de Firebase
+  const allCategories = [
     { id: 'all', name: 'Todos' },
-    { id: 'hombre', name: 'Hombre' },
-    { id: 'mujer', name: 'Mujer' },
-    { id: 'niños', name: 'Niños' },
-    { id: 'accesorios', name: 'Accesorios' }
+    ...categories.map(cat => ({
+      id: cat.value || cat.id,
+      name: cat.name
+    }))
   ];
 
   const handleMenuToggle = () => {
@@ -39,7 +42,7 @@ const Header = ({ onCategorySelect, selectedCategory }) => {
           {/* Desktop Navigation */}
           <nav className="nav-desktop">
             <ul className="nav-list">
-              {categories.map((category) => (
+              {allCategories.map((category) => (
                 <li key={category.id}>
                   <button
                     className={`nav-item ${selectedCategory === category.id ? 'active' : ''}`}
@@ -77,7 +80,7 @@ const Header = ({ onCategorySelect, selectedCategory }) => {
         {/* Mobile Navigation */}
         <nav className={`nav-mobile ${isMenuOpen ? 'open' : ''}`}>
           <ul className="nav-list-mobile">
-            {categories.map((category) => (
+            {allCategories.map((category) => (
               <li key={category.id}>
                 <button
                   className={`nav-item-mobile ${selectedCategory === category.id ? 'active' : ''}`}

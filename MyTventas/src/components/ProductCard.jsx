@@ -1,10 +1,17 @@
 import React from 'react';
+import useCategories from '../hooks/useCategories';
 import './ProductCard.css';
 
 const ProductCard = ({ product, onViewDetails }) => {
+  const { categories } = useCategories();
+  
   const handleViewMore = () => {
     onViewDetails(product);
   };
+
+  // Verificar si la categoría del producto existe
+  const categoryExists = categories.some(cat => cat.value === product.category);
+  const displayCategory = categoryExists ? product.category : 'Sin categoría';
 
   return (
     <div className="product-card">
@@ -28,7 +35,7 @@ const ProductCard = ({ product, onViewDetails }) => {
       
       <div className="product-info">
         <h3 className="product-name">{product.name}</h3>
-        <p className="product-category">{product.category}</p>
+        <p className="product-category">{displayCategory}</p>
         <div className="product-price-container">
           <span className="product-price">UYU ${product.price.toLocaleString('es-UY')}</span>
         </div>

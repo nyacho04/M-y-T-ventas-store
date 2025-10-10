@@ -1,36 +1,105 @@
 import { useState, useEffect } from 'react';
+import { getCategories, addCategory, deleteCategory, subscribeToCategories } from '../firebase/products';
 
 const useCategories = () => {
-  const [categories, setCategories] = useState([
-    { value: 'hombre', label: 'Hombre' },
-    { value: 'mujer', label: 'Mujer' },
-    { value: 'niños', label: 'Niños' },
-    { value: 'accesorios', label: 'Accesorios' }
-  ]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const addCategory = (newCategory) => {
-    const categoryId = newCategory.toLowerCase().replace(/\s+/g, '-');
-    const categoryExists = categories.some(cat => cat.value === categoryId);
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        setLoading(true);
+        const categoriesData = await getCategories();
+        
+        // Si no hay categorías en Firebase, crear las categorías por defecto
+        if (categoriesData.length === 0) {
+          const defaultCategories = [
+            { name: 'Hombre', value: 'hombre' },
+            { name: 'Mujer', value: 'mujer' },
+            { name: 'Accesorios', value: 'accesorios' }
+          ];
+          
+          for (const cat of defaultCategories) {
+            await addCategory(cat);
+          }
+          
+          // Cargar las categorías recién creadas
+          const newCategories = await getCategories();
+          setCategories(newCategories);
+        } else {
+          setCategories(categoriesData);
+        }
+        
+        setError(null);
+      } catch (err) {
+        console.error('Error loading categories:', err);
+        setError(err.message);
+        // Fallback a categorías por defecto si hay error
+        setCategories([
+          { id: 'hombre', name: 'Hombre', value: 'hombre' },
+          { id: 'mujer', name: 'Mujer', value: 'mujer' },
+          { id: 'accesorios', name: 'Accesorios', value: 'accesorios' }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (!categoryExists) {
-      const newCat = {
-        value: categoryId,
-        label: newCategory.trim()
+    // Cargar categorías iniciales
+    loadCategories();
+
+    // Suscribirse a cambios en tiempo real
+    const unsubscribe = subscribeToCategories((updatedCategories) => {
+      setCategories(updatedCategories);
+    });
+
+    // Limpieza al desmontar
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+
+  const handleAddCategory = async (categoryName) => {
+    try {
+      const categoryData = {
+        name: categoryName.trim(),
+        value: categoryName.toLowerCase().replace(/\s+/g, '-')
       };
-      setCategories(prev => [...prev, newCat]);
-      return newCat;
+      
+      await addCategory(categoryData);
+      return true;
+    } catch (error) {
+      console.error('Error adding category:', error);
+      setError('Error al agregar categoría');
+      return false;
     }
-    return null;
   };
 
-  const removeCategory = (categoryId) => {
-    setCategories(prev => prev.filter(cat => cat.value !== categoryId));
+  const handleRemoveCategory = async (categoryId) => {
+    try {
+      await deleteCategory(categoryId);
+      return true;
+    } catch (error) {
+      console.error('Error removing category:', error);
+      setError('Error al eliminar categoría');
+      return false;
+    }
   };
+
+  // Convertir para compatibilidad con ProductForm (value/label)
+  const categoriesForSelect = categories.map(cat => ({
+    value: cat.value || cat.id,
+    label: cat.name
+  }));
 
   return {
     categories,
-    addCategory,
-    removeCategory
+    categoriesForSelect,
+    loading,
+    error,
+    addCategory: handleAddCategory,
+    removeCategory: handleRemoveCategory
   };
 };
 

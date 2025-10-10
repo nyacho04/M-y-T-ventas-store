@@ -1,7 +1,10 @@
 import React from 'react';
+import useCategories from '../hooks/useCategories';
 import './Footer.css';
 
 const Footer = ({ onCategorySelect }) => {
+  const { categories } = useCategories();
+
   return (
     <footer className="footer">
       <div className="container">
@@ -72,30 +75,15 @@ const Footer = ({ onCategorySelect }) => {
           <div className="footer-section">
             <h4 className="footer-subtitle">Categorías</h4>
             <div className="category-links">
-              <button 
-                className="category-link" 
-                onClick={() => onCategorySelect('hombre')}
-              >
-                Hombre
-              </button>
-              <button 
-                className="category-link" 
-                onClick={() => onCategorySelect('mujer')}
-              >
-                Mujer
-              </button>
-              <button 
-                className="category-link" 
-                onClick={() => onCategorySelect('niños')}
-              >
-                Niños
-              </button>
-              <button 
-                className="category-link" 
-                onClick={() => onCategorySelect('accesorios')}
-              >
-                Accesorios
-              </button>
+              {categories.map((category) => (
+                <button 
+                  key={category.id}
+                  className="category-link" 
+                  onClick={() => onCategorySelect(category.value || category.id)}
+                >
+                  {category.name}
+                </button>
+              ))}
             </div>
           </div>
         </div>
