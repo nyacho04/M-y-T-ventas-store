@@ -61,7 +61,8 @@ const StoreApp = () => {
                 }
               </h2>
               <p className="catalog-subtitle">
-                Descubre nuestra colección de moda elegante y contemporánea
+              Somos de Maldonado,
+              tenemos un emprendimiento de venta nueva de ropa deportiva, accesorios para dama, caballero y niños. Descubre nuestra colección...
               </p>
             </div>
             

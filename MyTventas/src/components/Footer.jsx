@@ -92,7 +92,7 @@ const Footer = ({ onCategorySelect }) => {
         <div className="footer-bottom">
           <div className="footer-bottom-content">
             <p className="copyright">
-              © 2025 M y T Ventas.
+              © 2025 hecho por Ignacio Devita :P.
             </p>
             <div className="footer-links">
             </div>
