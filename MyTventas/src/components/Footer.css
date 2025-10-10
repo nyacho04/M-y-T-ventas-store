@@ -205,7 +205,7 @@
 /* Desktop layout */
 @media (min-width: 640px) {
   .footer-content {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .contact-item {
@@ -236,13 +236,18 @@
 
 @media (min-width: 768px) {
   .footer-content {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .footer-bottom-content {
     flex-direction: row;
     justify-content: space-between;
     text-align: left;
+  }
+
+  /* Ocultar categorías en PC */
+  .footer-categories {
+    display: none;
   }
 }
 

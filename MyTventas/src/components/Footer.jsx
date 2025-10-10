@@ -82,7 +82,7 @@ const Footer = ({ onCategorySelect }) => {
           </div>
 
           {/* Categories Quick Links */}
-          <div className="footer-section">
+          <div className="footer-section footer-categories">
             <h4 className="footer-subtitle">Categorías</h4>
             <div className="category-links">
               {categories.map((category) => (

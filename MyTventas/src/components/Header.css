@@ -15,6 +15,32 @@
   padding: var(--spacing-sm) 0;
 }
 
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.logo-image {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--lavender-200);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.clickable-logo {
+  cursor: pointer;
+}
+
+.clickable-logo:hover {
+  transform: scale(1.1);
+  border-color: var(--lavender-400);
+  box-shadow: var(--shadow-md);
+}
+
 .logo h1 {
   font-family: var(--font-title);
   font-size: 1.5rem;
@@ -166,10 +192,131 @@
   .logo h1 {
     font-size: 1.75rem;
   }
+
+  .logo-image {
+    width: 36px;
+    height: 36px;
+  }
 }
 
 @media (min-width: 1024px) {
   .logo h1 {
     font-size: 2rem;
+  }
+
+  .logo-image {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Logo Modal Styles */
+.logo-modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.95) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 99999 !important;
+  padding: var(--spacing-xl) !important;
+  animation: fadeIn 0.3s ease !important;
+  overflow: auto !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  isolation: isolate !important;
+}
+
+.logo-modal-container {
+  position: relative !important;
+  animation: scaleIn 0.3s ease !important;
+  margin: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 100000 !important;
+}
+
+.logo-modal-close {
+  position: absolute !important;
+  top: -15px !important;
+  right: -15px !important;
+  background: rgba(0, 0, 0, 0.9) !important;
+  color: white !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 24px !important;
+  font-weight: bold !important;
+  z-index: 100002 !important;
+  transition: all var(--transition-fast) !important;
+  border: 2px solid white !important;
+  cursor: pointer !important;
+}
+
+.logo-modal-close:hover {
+  background: rgba(0, 0, 0, 1) !important;
+  transform: scale(1.1) !important;
+}
+
+/* Asegurar que el botón de cerrar esté siempre visible */
+.logo-modal-close {
+  pointer-events: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.logo-modal-image {
+  max-width: 70vw !important;
+  max-height: 70vh !important;
+  width: auto !important;
+  height: auto !important;
+  border-radius: var(--border-radius-lg) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
+  object-fit: contain !important;
+  z-index: 100000 !important;
+  position: relative !important;
+}
+
+/* Asegurar que el modal esté por encima de todo */
+.logo-modal-backdrop * {
+  z-index: inherit !important;
+}
+
+/* Forzar que el modal tenga máxima prioridad sobre cualquier elemento */
+body:has(.logo-modal-backdrop) {
+  overflow: hidden !important;
+}
+
+.logo-modal-backdrop {
+  /* Forzar que esté por encima de cualquier transform o stacking context */
+  transform: translateZ(0) !important;
+  will-change: transform !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }

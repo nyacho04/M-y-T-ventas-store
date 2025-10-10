@@ -28,7 +28,13 @@ const AdminDashboard = () => {
 
   const stats = {
     totalProducts: products.length,
-    totalValue: products.reduce((sum, product) => sum + product.price, 0),
+    totalValue: products.reduce((sum, product) => {
+      // Solo sumar si el precio es un número
+      if (typeof product.price === 'number') {
+        return sum + product.price;
+      }
+      return sum; // Ignorar precios de texto como "2x100", "Consultar", etc.
+    }, 0),
     categories: [...new Set(products.map(p => p.category))].length
   };
 

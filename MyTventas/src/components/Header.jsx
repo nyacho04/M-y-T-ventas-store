@@ -5,6 +5,7 @@ import './Header.css';
 
 const Header = ({ onCategorySelect, selectedCategory }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
   const navigate = useNavigate();
   const { categories } = useCategories();
 
@@ -30,12 +31,27 @@ const Header = ({ onCategorySelect, selectedCategory }) => {
     navigate('/admin/login');
   };
 
+  const handleLogoClick = () => {
+    setIsLogoModalOpen(true);
+  };
+
+  const handleCloseLogoModal = () => {
+    setIsLogoModalOpen(false);
+  };
+
   return (
     <header className="header">
       <div className="container">
         <div className="header-content">
           {/* Logo */}
           <div className="logo">
+            <img 
+              src="/mytlogo.jpg" 
+              alt="M y T Ventas Logo" 
+              className="logo-image clickable-logo"
+              onClick={handleLogoClick}
+              title="Hacer clic para ampliar"
+            />
             <h1>M y T Ventas</h1>
           </div>
 
@@ -104,6 +120,26 @@ const Header = ({ onCategorySelect, selectedCategory }) => {
           </ul>
         </nav>
       </div>
+
+      {/* Logo Modal */}
+      {isLogoModalOpen && (
+        <div className="logo-modal-backdrop" onClick={handleCloseLogoModal}>
+          <div className="logo-modal-container" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="logo-modal-close"
+              onClick={handleCloseLogoModal}
+              aria-label="Cerrar modal"
+            >
+              ×
+            </button>
+            <img
+              src="/mytlogo.jpg"
+              alt="M y T Ventas Logo - Vista ampliada"
+              className="logo-modal-image"
+            />
+          </div>
+        </div>
+      )}
     </header>
   );
 };

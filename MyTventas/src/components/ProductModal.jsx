@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import useCategories from '../hooks/useCategories';
 import './ProductModal.css';
 
 const ProductModal = ({ product, isOpen, onClose }) => {
   const { categories } = useCategories();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape') {
@@ -22,11 +23,33 @@ const ProductModal = ({ product, isOpen, onClose }) => {
     };
   }, [isOpen, onClose]);
 
+  // Resetear índice de imagen cuando cambie el producto
+  useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [product]);
+
   if (!isOpen || !product) return null;
 
   // Verificar si la categoría del producto existe
   const categoryExists = categories.some(cat => cat.value === product.category);
   const displayCategory = categoryExists ? product.category : 'Sin categoría';
+
+  // Obtener imágenes del producto (compatibilidad con formato antiguo y nuevo)
+  const productImages = product.images || (product.image ? [product.image] : []);
+  const currentImage = productImages[currentImageIndex];
+
+  // Funciones de navegación de imágenes
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % productImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + productImages.length) % productImages.length);
+  };
+
+  const goToImage = (index) => {
+    setCurrentImageIndex(index);
+  };
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -47,11 +70,67 @@ const ProductModal = ({ product, isOpen, onClose }) => {
         
         <div className="modal-content">
           <div className="modal-image-section">
-            <img
-              src={product.image}
-              alt={product.name}
-              className="modal-image"
-            />
+            {productImages.length > 0 ? (
+              <>
+                <div className="image-container">
+                  <img
+                    src={currentImage}
+                    alt={product.name}
+                    className="modal-image"
+                  />
+                  
+                  {/* Botones de navegación */}
+                  {productImages.length > 1 && (
+                    <>
+                      <button
+                        className="image-nav-btn prev-btn"
+                        onClick={prevImage}
+                        aria-label="Imagen anterior"
+                      >
+                        ‹
+                      </button>
+                      <button
+                        className="image-nav-btn next-btn"
+                        onClick={nextImage}
+                        aria-label="Siguiente imagen"
+                      >
+                        ›
+                      </button>
+                    </>
+                  )}
+                  
+                  {/* Indicador de imagen actual */}
+                  {productImages.length > 1 && (
+                    <div className="image-counter">
+                      {currentImageIndex + 1} / {productImages.length}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Miniaturas de imágenes */}
+                {productImages.length > 1 && (
+                  <div className="image-thumbnails">
+                    {productImages.map((image, index) => (
+                      <button
+                        key={index}
+                        className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
+                        onClick={() => goToImage(index)}
+                      >
+                        <img
+                          src={image}
+                          alt={`${product.name} ${index + 1}`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="no-image-placeholder">
+                <span>📷</span>
+                <p>Sin imagen</p>
+              </div>
+            )}
           </div>
           
           <div className="modal-info-section">
@@ -61,7 +140,12 @@ const ProductModal = ({ product, isOpen, onClose }) => {
             </div>
             
             <div className="modal-price-section">
-              <span className="modal-price">UYU ${product.price.toLocaleString('es-UY')}</span>
+              <span className="modal-price">
+                {typeof product.price === 'number' 
+                  ? `UYU $${product.price.toLocaleString('es-UY')}`
+                  : `UYU $${product.price}`
+                }
+              </span>
             </div>
             
             <div className="modal-description">
@@ -105,7 +189,10 @@ const ProductModal = ({ product, isOpen, onClose }) => {
               <button 
                 className="contact-btn"
                 onClick={() => {
-                  const message = `¡Hola! Me interesa el producto: ${product.name} - UYU $${product.price.toLocaleString('es-UY')}`;
+                  const priceText = typeof product.price === 'number' 
+                    ? product.price.toLocaleString('es-UY')
+                    : product.price;
+                  const message = `¡Hola! Me interesa el producto: ${product.name} - UYU $${priceText}`;
                   const whatsappUrl = `https://api.whatsapp.com/send/?phone=59894405866&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
                   window.open(whatsappUrl, '_blank');
                 }}
