@@ -61,8 +61,7 @@ const StoreApp = () => {
                 }
               </h2>
               <p className="catalog-subtitle">
-              Somos de Maldonado,
-              tenemos un emprendimiento de venta nueva de ropa deportiva, accesorios para dama, caballero y niños. Descubre nuestra colección...
+              Somos un emprendimiento de ropa ubicado en Maldonado. Tenemos ropa, accesorios y más.
               </p>
             </div>
             
